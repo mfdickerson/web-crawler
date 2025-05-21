@@ -25,6 +25,7 @@ class WebCrawler:
         self.site_data = {}
         self.visited = set()
         self.to_visit = set([root_url])
+        self.visiting = set()
 
     def print_site_data(self):
         for key, value in self.site_data.items():
@@ -42,9 +43,6 @@ class WebCrawler:
             return page
         
     async def parse_page(self, url):
-        self.to_visit.remove(url)
-        self.visited.add(url)
-
         print(f"start: {url}")
         page = await self.get_page(url)
         beautiful_page = BeautifulSoup(page, "html.parser")
@@ -53,20 +51,24 @@ class WebCrawler:
 
         new_urls = self.get_subdomains(links)
         self.update_to_visit(new_urls)
+        self.visiting.remove(url)
+        self.visited.add(url)
         print(f"end:   {url}")
 
 
 
     async def crawl(self):
-        while len(self.to_visit) > 0:
-            tasks = [ 
-			    self.parse_page(url)
-			    for url in self.to_visit 
-		    ] 
-            await asyncio.gather(*tasks) 
+        tasks = []
+        while len(self.to_visit) > 0 or len(self.visiting) > 0:
+            if len(self.to_visit) > 0:
+                next_url = self.to_visit.pop()
+                self.visiting.add(next_url)
 
-            
-    
+                tasks.append(asyncio.create_task(self.parse_page(next_url)))
+            else:
+                await asyncio.sleep(0) # Allow other tasks to run
+        await asyncio.gather(*tasks)
+        
     def get_links(self, beautiful_page):
         links = beautiful_page.select("a[href]")
         return_urls = set()
@@ -94,7 +96,7 @@ class WebCrawler:
     
     def update_to_visit(self, urls):
         for url in urls:
-            if url not in self.visited:
+            if url not in self.visited and url not in self.visiting:
                 self.to_visit.add(url)
     
 async def main():
