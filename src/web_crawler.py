@@ -1,7 +1,7 @@
 import aiohttp
 import requests
 import asyncio
-import async_timeout
+# import async_timeout
 from bs4 import BeautifulSoup
 
 import aiohttp
@@ -22,8 +22,16 @@ class WebCrawler:
     def __init__(self, root_url, session):
         self.session = session
         self.root_url = root_url
+        self.site_data = {}
         self.visited = set()
         self.to_visit = set([root_url])
+
+    def print_site_data(self):
+        for key, value in self.site_data.items():
+            print(f"{key}")
+            for link in value:
+                print(f"  - {link}")
+            print("\n")
 
 
     async def get_page(self, url):
@@ -40,7 +48,10 @@ class WebCrawler:
         print(f"start: {url}")
         page = await self.get_page(url)
         beautiful_page = BeautifulSoup(page, "html.parser")
-        new_urls = self.get_subdomains(beautiful_page)
+        links = self.get_links(beautiful_page)
+        self.site_data.update({url: links})
+
+        new_urls = self.get_subdomains(links)
         self.update_to_visit(new_urls)
         print(f"end:   {url}")
 
@@ -56,9 +67,9 @@ class WebCrawler:
 
             
     
-    def get_subdomains(self, beautiful_page):
+    def get_links(self, beautiful_page):
         links = beautiful_page.select("a[href]")
-        return_urls = []
+        return_urls = set()
         for link in links:
             url = link["href"]
 
@@ -68,9 +79,16 @@ class WebCrawler:
             else:
                 absolute_url = url
 
-            # ensure the crawled link belongs to the target domain and hasn't been visited
-            if absolute_url.startswith(self.root_url):
-                return_urls.append(absolute_url)
+            return_urls.add(absolute_url)
+
+        return return_urls
+
+    def get_subdomains(self, links):
+        return_urls = []
+        for link in links:
+            # ensure the crawled link belongs to the target domain
+            if link.startswith(self.root_url):
+                return_urls.append(link)
 
         return return_urls
     
@@ -82,11 +100,12 @@ class WebCrawler:
 async def main():
 
     async with aiohttp.ClientSession(trust_env=True) as client_session:
-        web_crawler = WebCrawler('https://www.matthewdickerson.net', client_session)
+        root_url = input("Enter a valid URL: ")
+        web_crawler = WebCrawler(root_url, client_session)
 
         await web_crawler.crawl()
 
-    print(web_crawler.visited)
+    web_crawler.print_site_data()
 
 
 if __name__ == "__main__":
