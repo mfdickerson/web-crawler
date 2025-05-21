@@ -77,15 +77,33 @@ It will:
 
 ---
 
-## 🧪 Testing
 
-Run all tests with:
+## 🐳 Docker
+
+You can run the web crawler in a containerized environment using Docker.
+
+### 🏗️ Build the Docker Image
+
+From the root of the project directory:
 
 ```bash
-pytest
+docker build -t web-crawler .
 ```
 
-Tests include unit tests for parsing and crawling, and asynchronous tests using `pytest-asyncio` to validate concurrency.
+### 🚀 Run the Crawler
+
+Replace `<URL>` with your desired starting point:
+
+```bash
+docker run --rm web-crawler python src/web_crawler.py <URL>
+```
+
+Example:
+
+```bash
+docker run --rm web-crawler python src/web_crawler.py https://www.overstory.com/
+```
+
 
 ---
 

@@ -1,4 +1,4 @@
-# 🧩 Contributing to Asynchronous Web Crawler
+# 🧩 Contributing to Web Crawler
 
 Thanks for your interest in contributing to this project! Whether you're fixing a bug, adding a feature, improving documentation, or writing tests — your help is appreciated.
 
@@ -32,6 +32,35 @@ Thanks for your interest in contributing to this project! Whether you're fixing 
    ```bash
    git checkout -b feature/my-new-feature
    ```
+
+---
+
+## 🐳 Docker (Alternative Setup)
+
+You can also contribute using Docker if you prefer working in containers.
+
+### 🔨 Build the Image
+
+```bash
+docker build -t web-crawler .
+```
+
+### 🚀 Run the Crawler
+
+```bash
+docker run --rm web-crawler python src/web_crawler.py https://www.overstory.com/
+```
+
+### 🧪 Run Tests
+
+Build and run tests using a dedicated test image:
+
+```bash
+docker build -t async-web-crawler-test -f Dockerfile.test .
+docker run --rm async-web-crawler-test
+```
+
+This runs the full test suite (including async tests) in an isolated container.
 
 ---
 
