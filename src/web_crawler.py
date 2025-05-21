@@ -1,11 +1,9 @@
+import argparse
 import aiohttp
 import requests
 import asyncio
 # import async_timeout
 from bs4 import BeautifulSoup
-
-import aiohttp
-import asyncio
 import random
 
 user_agent_list = [
@@ -101,17 +99,19 @@ class WebCrawler:
     
 async def main():
 
+    parser = argparse.ArgumentParser(description="Web Crawler")
+    parser.add_argument("starting_url", help="Starting URL")
+    args = parser.parse_args()
+
+    root_url = args.starting_url
+
     async with aiohttp.ClientSession(trust_env=True) as client_session:
-        root_url = input("Enter a valid URL: ")
+        # root_url = input("Enter a valid URL: ")
         web_crawler = WebCrawler(root_url, client_session)
 
         await web_crawler.crawl()
 
     web_crawler.print_site_data()
 
-
 if __name__ == "__main__":
-    # asyncio.run(main())
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    asyncio.run(main())
