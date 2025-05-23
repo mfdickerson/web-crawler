@@ -10,6 +10,11 @@ This module defines a simple crawler that:
 - Outputs all visited URLs and their discovered links
 
 Uses aiohttp for HTTP requests and BeautifulSoup for HTML parsing.
+
+Usage:
+    python web_crawler https://example.com [--max_page_limit=3]
+
+Author: Mark Dickerson
 """
 
 import argparse
@@ -50,7 +55,15 @@ class PageParser:
 
     @classmethod
     async def load_page(cls, session, page_url):
-        """Fetches a page and returns a PageParser instance for the given URL."""
+        """Fetches and returns a parsed PageParser instance for the given URL.
+
+        Args:
+            session (aiohttp.ClientSession): The HTTP session used for requests.
+            page_url (str): The URL to fetch.
+
+        Returns:
+            PageParser: PageParser object with extracted data.
+        """
         headers = {"User-Agent": user_agent_list[random.randint(0, len(user_agent_list) - 1)]}
         for attempt in range(cls.max_attempts):
             try:
@@ -70,7 +83,11 @@ class PageParser:
                     raise  # Re-raise error after max_attempts reached
 
     def get_links(self) -> set[str]:
-        """Extracts all anchor tag href links and returns a set of absolute URLs."""
+        """Extracts all anchor tag href links as absolute URLs.
+
+        Returns:
+            set[str]: Absolute URLs found in anchor tags.
+        """
         links = self.beautiful_page.select("a[href]")
         return_urls = set()
         for link in links:
@@ -79,7 +96,14 @@ class PageParser:
         return return_urls
 
     def get_absolute_url_from_href(self, href) -> str:
-        """Converts a relative URL to an absolute one."""
+        """Converts a relative URL to an absolute one as needed.
+
+        Args:
+            href (str): The href string from an anchor tag.
+
+        Returns:
+            str: Absolute URL.
+        """
         parsed_reference = urlparse(href)
         if parsed_reference.scheme != "http":
             absolute_url = urljoin(self.page_url, href)
@@ -89,7 +113,14 @@ class PageParser:
         return absolute_url
 
     def get_subdomains(self, links) -> set[str]:
-        """Filters links to only those that match the domain of the root URL."""
+        """Filters links to only those that match the domain of the root URL.
+
+        Args:
+            links (set[str]): A set of absolute URLs.
+
+        Returns:
+            set[str]: Filtered URLs that match the domain of the root URL.
+        """
         return_urls = set()
         for link in links:
             # ensure the crawled link belongs to the target domain
@@ -102,7 +133,14 @@ class PageParser:
 
     @classmethod
     def repair_incomplete_url(cls, url) -> str:
-        """Ensures a URL has a scheme and correct format."""
+        """Ensures a URL has a scheme and correct format.
+
+        Args:
+            url (str): A potentially incomplete URL.
+
+        Returns:
+            str: Properly formatted URL with scheme and netloc.
+        """
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
         if scheme == "":
@@ -146,7 +184,11 @@ class WebCrawler:
             print("\n")
 
     async def process_page(self, url):
-        """Processes a single page: fetches, extracts links, updates crawl state."""
+        """Processes a single page: fetches, extracts links, updates crawl state.
+
+        Args:
+            url (str): URL of the page to process.
+        """
         logger.info(f"Begin processing: {url}")
 
         try:
@@ -205,7 +247,11 @@ class WebCrawler:
             logger.info(f"{len(self.site_data)} pages crawled")
 
     def update_to_visit(self, urls):
-        """Adds new URLs to the queue if not already visited or in progress."""
+        """Adds new URLs to the queue if not already visited or in progress.
+
+        Args:
+            urls (set[str]): Set of URLs to consider for crawling.
+        """
         for url in urls:
             if url not in self.seen:  # Not visited and not visiting
                 self.to_visit.add(url)
