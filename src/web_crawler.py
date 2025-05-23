@@ -67,10 +67,10 @@ class PageParser:
             try:
                 timeout = aiohttp.ClientTimeout(total=cls.max_timeout)
                 async with session.get(page_url, headers=headers, timeout=timeout) as response:
-                    if response.status == 200:  # TODO: Handle other esponse.status values
+                    if response.ok:  # response.status == 2xx
                         page = await response.text()
                         return cls(page_url, page)  # Exit the loop if successful
-                    else:
+                    else:  # TODO: Handle other specific response.status values
                         logger.warning(f"{page_url} returned status: {response.status}")
                         if attempt < (cls.max_attempts - 1):
                             await asyncio.sleep(2**attempt)  # Exponential backoff
