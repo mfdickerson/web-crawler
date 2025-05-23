@@ -17,14 +17,15 @@ Thanks for your interest in contributing to this project! Whether you're fixing 
    It's recommended to isolate your environment using `venv`. Directions for a Mac:
 
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+   cd src
+   virtualenv -p python3.13 venv && source venv/bin/activate
+   pip install -r requirements/dev.txt
    ```
 
 4. **Install dependencies**
 
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements/dev.txt
    ```
 
 5. **Create a new branch for your work**
@@ -39,7 +40,9 @@ Thanks for your interest in contributing to this project! Whether you're fixing 
 
 You can also contribute using Docker if you prefer working in containers.
 
-### 🔨 Build the Image
+### 🏗️ Build the Docker Image
+
+From the root of the project directory:
 
 ```bash
 docker build -t web-crawler .
@@ -47,20 +50,37 @@ docker build -t web-crawler .
 
 ### 🚀 Run the Crawler
 
-```bash
-docker run --rm web-crawler python src/web_crawler.py https://www.overstory.com/
-```
-
-### 🧪 Run Tests
-
-Build and run tests using a dedicated test image:
+Replace `<URL>` with your desired starting point:
 
 ```bash
-docker build -t async-web-crawler-test -f Dockerfile.test .
-docker run --rm async-web-crawler-test
+docker run --rm web-crawler <URL> [--max_page_limit=<100>]
 ```
 
-This runs the full test suite (including async tests) in an isolated container.
+---
+
+## 🧪 Run Tests
+
+Make sure all tests pass before submitting a pull request:
+
+### Unit Tests
+Run test unit tests by starting virtual environment, installing dependencies and running `pytest`:
+
+```bash
+cd src
+virtualenv -p python3.13 venv && source venv/bin/activate
+pip install -r requirements/dev.txt
+pytest
+```
+
+### Integration Tests
+Run integration tests by starting virtual environment, installing dependencies and running `pytest`:
+
+```bash
+cd test/integration
+virtualenv -p python3.13 venv && source venv/bin/activate
+pip install -r requirements.txt
+pytest
+```
 
 ---
 
@@ -71,18 +91,6 @@ This runs the full test suite (including async tests) in an isolated container.
 - 🧪 Test coverage for crawler or parser logic
 - 📖 Documentation improvements
 - 🔧 Dev tooling or CI enhancements
-
----
-
-## 🧪 Running Tests
-
-Make sure all tests pass before submitting a pull request:
-
-```bash
-pytest
-```
-
-> Tests for asynchronous code use `pytest-asyncio`.
 
 ---
 

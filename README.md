@@ -37,40 +37,59 @@ pip install -r src/requirements.txt
 ## 📁 Project Structure
 
 ```
-async-web-crawler/
+web-crawler/
 │
 ├── src/
-│   ├── __init__.py
-│   ├── requirements.txt            # Requirements needed to run web crawler
-│   ├── web_crawler.py              # Main crawler logic
-│   └── tests/
-│       ├── init__.py
-│       └── test_web_crawler.py     # Unit tests
+│   ├── requirements/               # Requirements needed to run web crawler
+│   │   ├── code_style.txt          # Requirements for code style checks
+│   │   └── dev.txt                 # Requirements for development and running module
+│   │
+│   ├── tests/
+│   │   ├── conftest.py             # Configurations shared between multiple unit test files
+│   │   ├── test_page_parser.py     # Unit tests for PageParser class
+│   │   └── test_web_crawler.py     # Unit tests for WebCrawler class
+│   │
+│   └── web_crawler.py              # Main crawler logic
 │
 ├── tests/
 │   └── integration/
-│       ├── init__.py
-│       ├── requirements.txt
+│       ├── requirements.txt        # Requirements for running integration tests
 │       └── test_web_crawler.py     # Integration tests
 │
+├── Dockerfile
 ├── LICENSE.md
 ├── README.md
 ├── CONTRIBUTING.md
-└── main.py                         # Entry point for running the crawler
+└── __main__.py                     # Entry point for running the crawler
 ```
 
 ---
 
 ## 🔧 Usage
 
-Run the crawler with a starting URL:
+### Setup
+
+Setting up virtual environment and installing dependancies:
+```bash
+cd src
+virtualenv -p python3.13 venv && source venv/bin/activate
+pip install -r requirements/dev.txt
+```
+
+From the `src/` directory, run the crawler with a starting URL:
 
 ```bash
-python main.py https://www.overstory.com/
+python web_crawler.py <URL> [--max_page_limit=<100>]
+```
+
+Example:
+
+```bash
+python web_crawler.py https://www.spider-man.com --max_page_limit=100
 ```
 
 It will:
-- Crawl all pages under the `www.overstory.com` subdomain
+- Crawl all pages under the `https://www.spider-man.com` subdomain
 - Print each URL it visits
 - Print all links found on each page
 - Ignore any links that point to other domains or subdomains
@@ -80,7 +99,7 @@ It will:
 
 ## 🐳 Docker
 
-You can run the web crawler in a containerized environment using Docker.
+You can also run the web crawler in a containerized environment using Docker.
 
 ### 🏗️ Build the Docker Image
 
@@ -95,13 +114,13 @@ docker build -t web-crawler .
 Replace `<URL>` with your desired starting point:
 
 ```bash
-docker run --rm web-crawler python src/web_crawler.py <URL>
+docker run --rm web-crawler <URL> [--max_page_limit=<100>]
 ```
 
 Example:
 
 ```bash
-docker run --rm web-crawler python src/web_crawler.py https://www.overstory.com/
+docker run --rm web-crawler https://www.spider-man.com --max_page_limit=100
 ```
 
 
@@ -110,16 +129,25 @@ docker run --rm web-crawler python src/web_crawler.py https://www.overstory.com/
 ## ✨ Example Output
 
 ```bash
-Visiting: https://www.overstory.com/
-Links found:
-  - https://www.overstory.com/about
-  - https://www.overstory.com/contact
-  - https://external.com/news     # Ignored
+- https://www.web-crawlers.com/
+  - https://www.web-crawlers.com/peter-parker
+  - https://www.web-crawlers.com/gwen-stacy
+  - https://www.web-crawlers.com/miles-morales
+  - https://www.web-crawlers.com/peni-parker
+  - https://www.web-crawlers.com/miguel-ohara
 
-Visiting: https://www.overstory.com/about
-Links found:
-  - https://www.overstory.com/
-  - https://www.overstory.com/team
+- https://www.web-crawlers.com/peter-parker
+  - https://www.web-crawlers.com/peter-parker/interests
+
+  - https://www.web-crawlers.com/peter-parker/interests
+    - https://www.web-crawlers.com/gwen-stacy
+    - https://www.the-daily-bugle.com # ignored
+    - https://www.oscorp.com # ignored
+
+- https://www.web-crawlers.com/gwen-stacy
+  - https://www.web-crawlers.com/gwen-stacy/interests
+  - https://www.web-crawlers.com/gwen-stacy/spider-gwen
+...
 ```
 
 ---
