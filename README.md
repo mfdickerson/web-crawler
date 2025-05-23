@@ -6,6 +6,21 @@ The crawler is limited to a single subdomain — for example, if you start with 
 
 ---
 
+## Table of Contents
+
+- [Features](#-features)
+- [Requirements](#-requirements)
+- [Project Structure](#-project-structure)
+- [Usage](#-usage)
+  - [Setup](#setup)
+  - [Docker](#-docker)
+  - [Example Output](#-example-output)
+- [Contributing and Testing](#-contributing-and-testing)
+- [License](#️-license)
+- [Contact](#-contact)
+
+---
+
 ## 🚀 Features
 
 - Asynchronous crawling using `aiohttp` and `asyncio`
@@ -94,14 +109,11 @@ It will:
 - Print all links found on each page
 - Ignore any links that point to other domains or subdomains
 
----
-
-
-## 🐳 Docker
+### 🐳 Docker
 
 You can also run the web crawler in a containerized environment using Docker.
 
-### 🏗️ Build the Docker Image
+#### 🏗️ Build the Docker Image
 
 From the root of the project directory:
 
@@ -109,7 +121,7 @@ From the root of the project directory:
 docker build -t web-crawler .
 ```
 
-### 🚀 Run the Crawler
+#### 🚀 Run the Crawler
 
 Replace `<URL>` with your desired starting point:
 
@@ -123,10 +135,7 @@ Example:
 docker run --rm web-crawler https://www.spider-man.com --max_page_limit=100
 ```
 
-
----
-
-## ✨ Example Output
+### ✨ Example Output
 
 ```bash
 - https://www.web-crawlers.com/
@@ -152,7 +161,7 @@ docker run --rm web-crawler https://www.spider-man.com --max_page_limit=100
 
 ---
 
-##  🧪Contributing and Testing
+## 🧪 Contributing and Testing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 

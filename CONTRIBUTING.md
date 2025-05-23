@@ -4,6 +4,23 @@ Thanks for your interest in contributing to this project! Whether you're fixing 
 
 ---
 
+## Table of Contents
+
+- [Getting Started](#-getting-started)
+- [Docker](#-docker-alternative-setup)
+- [Run Tests](#-run-tests)
+  - [Unit Tests](#unit-tests)
+  - [Integration Tests](#integration-tests)
+- [What You Can Contribute](#-what-you-can-contribute)
+- [Code Style](#-code-style)
+  - [Running Automated Code Style Checks](#running-automated-code-style-checks)
+  - [Pre-Commit](#pre-commit)
+- [Submitting a Pull Request](#-submitting-a-pull-request)
+- [Code of Conduct](#-code-of-conduct)
+- [Questions?](#-questions)
+
+---
+
 ## 🛠️ Getting Started
 
 1. **Fork the repository**
@@ -34,21 +51,15 @@ Thanks for your interest in contributing to this project! Whether you're fixing 
    git checkout -b feature/my-new-feature
    ```
 
----
+6. **Build the Docker Image**
 
-## 🐳 Docker (Alternative Setup)
+   From the root of the project directory:
 
-You can also contribute using Docker if you prefer working in containers.
+   ```bash
+   docker build -t web-crawler .
+   ```
 
-### 🏗️ Build the Docker Image
-
-From the root of the project directory:
-
-```bash
-docker build -t web-crawler .
-```
-
-### 🚀 Run the Crawler
+## 🚀 Run the Crawler
 
 Replace `<URL>` with your desired starting point:
 
@@ -100,22 +111,60 @@ pytest
 - Use meaningful variable and function names
 - Include docstrings for all public functions and classes
 - Keep functions small and focused
+- Uses Black, Flake8, iSort, 
 
----
+### Running Automated Code Style Checks
 
-## ✅ Pull Request Checklist
+To ensure consistent code style across the project, run the following tools before submitting your changes:
 
-- [ ] Code is clean and well-documented
-- [ ] Tests are included for any new functionality
-- [ ] All tests pass
-- [ ] Description of the change is included in the PR
-- [ ] Linting and formatting are followed
+```bash
+# Auto-format with Black
+black src/ tests/
+
+# Sort imports with isort
+isort src/ tests/
+
+# Lint with Flake8
+flake8 src/ tests/
+
+# Lint with Pylint
+pylint src/ tests/
+```
+
+### Pre-Commit
+
+The easiest way to make sure your Pull Request adheres to the code style is to install [pre-commit](https://pre-commit.com/). To set up pre-commit locally, run the following command after [sourcing the virtual environment](#️-getting-started):
+
+```
+pre-commit install
+```
 
 ---
 
 ## 📬 Submitting a Pull Request
 
 When you're ready, push your branch and open a pull request on GitHub. Fill out the PR template with a clear description of your changes.
+
+### GitHub Actions
+
+There are several GitHub Actions that will run against Pull Requests when they are opened, reopened,
+or synchronized. The following checks ensure that code quality analyses and unit tests run against
+each PR before it is merged into `main`:
+
+- Code Style Checks
+  - iSort
+- Unit Tests
+
+To learn more, read the [GitHub Actions documentation](https://docs.github.com/en/actions) or view
+the files in this repo under the `.github/workflows/` directory.
+
+### ✅ Pull Request Checklist
+
+- [ ] Code is clean and well-documented
+- [ ] Tests are included for any new functionality
+- [ ] All tests pass
+- [ ] Description of the change is included in the PR
+- [ ] Linting and formatting are followed
 
 ---
 
