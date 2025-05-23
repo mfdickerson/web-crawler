@@ -1,7 +1,9 @@
 """
 test_web_crawler.py
 
-Unit tests for the WebCrawler class
+Unit tests for the WebCrawler class:
+- Ensures proper tracking of visited and queued URLs
+- Verifies domain filtering and crawl state behavior
 """
 
 import pytest
@@ -32,7 +34,7 @@ async def test_initialization(client_session, url, expected_root_url):
 
 @pytest.mark.asyncio
 async def test_update_to_visit(client_session):
-    """Tests updating of to_visit queue"""
+    """New URLs should be added to to_visit if not already seen."""
     crawler = WebCrawler("https://www.web-crawlers.com", client_session)
     crawler.seen = set(
         [

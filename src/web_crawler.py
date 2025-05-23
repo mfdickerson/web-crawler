@@ -24,8 +24,6 @@ import random
 from urllib.parse import urljoin, urlparse, urlunparse
 
 import aiohttp
-
-# import async_timeout
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger()
@@ -64,19 +62,23 @@ class PageParser:
         Returns:
             PageParser: PageParser object with extracted data.
         """
-        headers = {"User-Agent": user_agent_list[random.randint(0, len(user_agent_list) - 1)]}
+        headers = {"User-Agent": random.choice(user_agent_list)}
         for attempt in range(cls.max_attempts):
             try:
                 timeout = aiohttp.ClientTimeout(total=cls.max_timeout)
                 async with session.get(page_url, headers=headers, timeout=timeout) as response:
-                    if response.status == 200:
+                    if response.status == 200:  # TODO: Handle other esponse.status values
                         page = await response.text()
                         return cls(page_url, page)  # Exit the loop if successful
                     else:
-                        print(page_url, response.status)
-                    return cls(page_url, None)
+                        logger.warning(f"{page_url} returned status: {response.status}")
+                        if attempt < (cls.max_attempts - 1):
+                            await asyncio.sleep(2**attempt)  # Exponential backoff
+                        else:
+                            return cls(page_url, page)
             except aiohttp.ClientError as e:  # TODO: Other errors that may require backoff?
                 if attempt < (cls.max_attempts - 1):
+                    logger.warning(e)
                     await asyncio.sleep(2**attempt)  # Exponential backoff
                 else:
                     logger.error(f"Failed to fetch {page_url} after {cls.max_attempts}: {e}")
@@ -183,6 +185,8 @@ class WebCrawler:
                 print(f"  - {link}")
             print("\n")
 
+    # TODO: Add support for saving results to file.
+
     async def process_page(self, url):
         """Processes a single page: fetches, extracts links, updates crawl state.
 
@@ -203,7 +207,7 @@ class WebCrawler:
                 new_urls = page_parser.get_subdomains(links)
                 self.update_to_visit(new_urls)
         except aiohttp.ClientConnectorError as e:
-            logger.error("Connection Error", str(e))
+            logger.error("Connection Error: {e}")
         except aiohttp.InvalidUrlClientError as e:
             logger.error(f"Invalid URL: {url}", str(e))
         finally:
@@ -265,6 +269,7 @@ async def main():
         parser = argparse.ArgumentParser(description="Web Crawler")
         parser.add_argument("starting_url", help="Starting URL")
         parser.add_argument("--max_page_limit", help="Max Page Limit", type=int, required=False)
+        # TODO: Add --log-level parameter
         args = parser.parse_args()
 
         root_url = args.starting_url

@@ -1,7 +1,7 @@
 """
-test_web_crawler.py
+test_web_crawler.py (Integration)
 
-Integration Test for the WebCrawler.
+Tests for the WebCrawler class and its integration with the PageParser class.
 """
 
 import aiohttp

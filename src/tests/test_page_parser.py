@@ -57,6 +57,7 @@ beautiful_page = """<!DOCTYPE html>
 
 @pytest.fixture
 def mock_aiohttp_get():
+    """Mocked aiohttp.ClientSession.get method returning a fixed HTML page."""
     mock_response = MagicMock()
     mock_response.__aenter__.return_value = mock_response
     mock_response.__aexit__.return_value = None
@@ -68,7 +69,7 @@ def mock_aiohttp_get():
 
 
 def test_page_parser_init():
-    """Tests initialization of PageParser class."""
+    """Test direct initialization of PageParser with raw HTML."""
     page_parser = PageParser("https://www.web-crawlers.com", ugly_page)
 
     assert page_parser.page_url == "https://www.web-crawlers.com"
@@ -77,15 +78,18 @@ def test_page_parser_init():
 
 @pytest.mark.asyncio
 async def test_load_page(client_session, mock_aiohttp_get):
-    """Tests creation of PageParser instance using PageParser.load_page()."""
+    """Test async loading of a PageParser instance via PageParser.load_page()."""
     page_parser = await PageParser.load_page(client_session, "https://www.web-crawlers.com")
 
     assert page_parser.page_url == "https://www.web-crawlers.com"
     assert page_parser.beautiful_page.prettify() == beautiful_page
 
 
+# TO DO: Test exponential backoff in PageParser.load_page()
+
+
 def test_get_links():
-    """Tests retrieving links from page."""
+    """ "Test that get_links returns a correct set of hrefs."""
     page_parser = PageParser("https://www.web-crawlers.com", ugly_page)
     links = page_parser.get_links()
     assert links == set(
@@ -102,7 +106,7 @@ test_data = [
 
 @pytest.mark.parametrize("url, expected_url", test_data)
 def test_repair_incomplete_url(url, expected_url):
-    """Ensure incomplete URLs are repaired."""
+    """Ensure repair_incomplete_url adds missing scheme as necessary."""
     repaired_url = PageParser.repair_incomplete_url(url)
 
     assert repaired_url == expected_url
