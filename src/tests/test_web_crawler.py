@@ -21,7 +21,7 @@ async def test_initialization(client_session, url, expected_root_url):
     crawler = WebCrawler(url, client_session)
     assert crawler.root_url == expected_root_url
     assert crawler.site_data == {}
-    assert crawler.visited == set()
+    assert crawler.seen == set()
     assert crawler.visiting == set()
     assert crawler.to_visit == set([expected_root_url])
     assert crawler.max_page_limit == None
@@ -30,8 +30,12 @@ async def test_initialization(client_session, url, expected_root_url):
 @pytest.mark.asyncio
 async def test_update_to_visit(client_session):
     crawler = WebCrawler("https://www.web-crawlers.com", client_session)
-    crawler.visited = set(
-        ["https://www.web-crawlers.com", "https://www.web-crawlers.com/peter-parker"]
+    crawler.seen = set(
+        [
+            "https://www.web-crawlers.com",
+            "https://www.web-crawlers.com/peter-parker",
+            "https://www.web-crawlers.com/miles-morales",
+        ]
     )
     crawler.visiting = set(["https://www.web-crawlers.com/miles-morales"])
     crawler.to_visit = set(["https://www.web-crawlers.com/peni-parker"])
