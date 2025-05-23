@@ -155,7 +155,6 @@ docker run --rm web-crawler https://www.spider-man.com --max_page_limit=100
 ##  🧪Contributing and Testing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
-```
 
 ---
 
