@@ -1,4 +1,6 @@
 """
+test_web_crawler.py
+
 Unit tests for the WebCrawler class
 """
 
@@ -18,6 +20,7 @@ test_data = [
 @pytest.mark.asyncio
 @pytest.mark.parametrize("url, expected_root_url", test_data)
 async def test_initialization(client_session, url, expected_root_url):
+    """Tests initialization of WebCrawler class."""
     crawler = WebCrawler(url, client_session)
     assert crawler.root_url == expected_root_url
     assert crawler.site_data == {}
@@ -29,6 +32,7 @@ async def test_initialization(client_session, url, expected_root_url):
 
 @pytest.mark.asyncio
 async def test_update_to_visit(client_session):
+    """Tests updating of to_visit queue"""
     crawler = WebCrawler("https://www.web-crawlers.com", client_session)
     crawler.seen = set(
         [

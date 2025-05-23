@@ -206,9 +206,9 @@ class WebCrawler:
             logger.error("Connection Error", str(e))
         except aiohttp.InvalidUrlClientError as e:
             logger.error(f"Invalid URL: {url}", str(e))
-
-        self.visiting.remove(url)
-        logger.info(f"End processing:   {url}")
+        finally:
+            self.visiting.remove(url)
+            logger.info(f"End processing:   {url}")
 
     async def crawl(self):
         """Main crawling loop, runs until the queue is exhausted or limit is reached."""

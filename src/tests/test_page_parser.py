@@ -1,5 +1,11 @@
 """
-Unit tests for the PageParser class
+test_page_parser.py
+
+Unit tests for the PageParser class, including:
+- URL repair and normalization
+- Absolute URL resolution
+- Subdomain filtering
+- Page content parsing logic
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -62,6 +68,7 @@ def mock_aiohttp_get():
 
 
 def test_page_parser_init():
+    """Tests initialization of PageParser class."""
     page_parser = PageParser("https://www.web-crawlers.com", ugly_page)
 
     assert page_parser.page_url == "https://www.web-crawlers.com"
@@ -70,6 +77,7 @@ def test_page_parser_init():
 
 @pytest.mark.asyncio
 async def test_load_page(client_session, mock_aiohttp_get):
+    """Tests creation of PageParser instance using PageParser.load_page()."""
     page_parser = await PageParser.load_page(client_session, "https://www.web-crawlers.com")
 
     assert page_parser.page_url == "https://www.web-crawlers.com"
@@ -77,11 +85,27 @@ async def test_load_page(client_session, mock_aiohttp_get):
 
 
 def test_get_links():
+    """Tests retrieving links from page."""
     page_parser = PageParser("https://www.web-crawlers.com", ugly_page)
     links = page_parser.get_links()
     assert links == set(
         ["https://www.web-crawlers.com/peter-parker", "https://www.web-crawlers.com/shelob"]
     )
+
+
+test_data = [
+    ("https://web-crawlers.com", "https://web-crawlers.com"),
+    ("web-crawlers.com", "https://web-crawlers.com"),
+    ("web-crawlers.com/peter-parker", "https://web-crawlers.com/peter-parker"),
+]
+
+
+@pytest.mark.parametrize("url, expected_url", test_data)
+def test_repair_incomplete_url(url, expected_url):
+    """Ensure incomplete URLs are repaired."""
+    repaired_url = PageParser.repair_incomplete_url(url)
+
+    assert repaired_url == expected_url
 
 
 test_data = [
@@ -93,6 +117,7 @@ test_data = [
 
 @pytest.mark.parametrize("href, expected_absolute_url", test_data)
 def test_get_absolute_url_from_href(href, expected_absolute_url):
+    """Validate conversion of relative href to absolute URL."""
     page_parser = PageParser("https://www.web-crawlers.com", ugly_page)
 
     absolute_url = page_parser.get_absolute_url_from_href(href)
@@ -124,6 +149,7 @@ test_data = [
 
 @pytest.mark.parametrize("page_url, links, expected_subdomains", test_data)
 def test_get_subdomains(page_url, links, expected_subdomains):
+    """Check that only links from the same domain are returned."""
     page_parser = PageParser(page_url, None)
     subdomains = page_parser.get_subdomains(links)
     print(f"Self netloc: {urlparse(page_parser.page_url).netloc}")
